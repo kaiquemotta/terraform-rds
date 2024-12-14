@@ -11,7 +11,7 @@ DB_NAME=${DB_NAME:-"my_database"}
 HOST=$(echo $DB_HOST | cut -d':' -f1)
 PORT=$(echo $DB_HOST | cut -d':' -f2)
 
-# Se não foi fornecida uma porta no DB_HOST, use a porta padrão
+# Se a porta não foi passada, usa o valor de DB_PORT
 PORT=${PORT:-$DB_PORT}
 
 # Comando para criar o banco de dados
