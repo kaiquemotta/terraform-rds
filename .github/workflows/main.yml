@@ -49,7 +49,7 @@ jobs:
       - name: Get RDS Endpoint
         id: rds_endpoint
         run: |
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint | cut -d':' -f1)
+          RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
           echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> $GITHUB_ENV
 
       - name: Wait for RDS to be available
@@ -59,7 +59,7 @@ jobs:
             sleep 30
           done
         env:
-          RDS_ENDPOINT: ${{ env.RDS_ENDPOINT }}
+          DB_HOST: ${{ env.RDS_ENDPOINT }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
 

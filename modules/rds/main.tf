@@ -46,6 +46,6 @@ resource "aws_security_group" "rds_sg" {
 }
 
 output "rds_endpoint" {
-  description = "The endpoint of the RDS instance."
-  value       = aws_db_instance.main.endpoint
+  description = "The endpoint of the RDS instance without port."
+  value       = replace(aws_db_instance.main.endpoint, ":3306", "")
 }
