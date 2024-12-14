@@ -58,15 +58,3 @@ jobs:
         run: |
           echo "Printing RDS Endpoint from Terraform output:"
           echo "${{ steps.get_rds_endpoint.outputs.rds_endpoint }}"
-
-      - name: Run Database Initialization Script
-        run: |
-          echo "Running database initialization script on ${{ steps.get_rds_endpoint.outputs.rds_endpoint }}"
-          chmod +x create-database.sh
-          ./create-database.sh
-        env:
-          DB_HOST: ${{ steps.get_rds_endpoint.outputs.rds_endpoint }}
-          DB_PORT: 3306
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_NAME: pdv
