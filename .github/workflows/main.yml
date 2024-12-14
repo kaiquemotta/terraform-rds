@@ -49,33 +49,25 @@ jobs:
       - name: Get RDS Endpoint
         id: rds_endpoint
         run: |
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint | cut -d':' -f1)
-          echo "Extracted RDS Endpoint: $RDS_ENDPOINT"
-          echo "RDS_ENDPOINT=$RDS_ENDPOINT" > rds_endpoint.txt
+          terraform output -raw rds_endpoint > rds_endpoint.txt
+          echo "RDS_ENDPOINT=$(cat rds_endpoint.txt)" >> $GITHUB_ENV
+          echo "RDS Endpoint: ${{ env.RDS_ENDPOINT }}"
+
+      - name: Debug RDS Endpoint File
+        run: |
+          echo "Contents of rds_endpoint.txt:"
+          cat rds_endpoint.txt
 
       - name: Wait for RDS to be available
         run: |
-          # Ler o endpoint do arquivo e logar o valor
-          RDS_ENDPOINT=$(cat rds_endpoint.txt | cut -d'=' -f2)
-          echo "RDS Endpoint: $RDS_ENDPOINT"
-
-          # Logar o comando MySQL antes da execução
           echo "Checking MySQL availability at $RDS_ENDPOINT"
-          CMD="mysql -h $RDS_ENDPOINT -P 3306 -u ${DB_USER} -p${DB_PASS} -e 'SELECT 1'"
-          echo "Executing: $CMD"
-
-          # Verificar a disponibilidade do MySQL
           until mysql -h "$RDS_ENDPOINT" -P 3306 -u "${{ secrets.DB_USER }}" -p"${{ secrets.DB_PASS }}" -e "SELECT 1"; do
             echo "Waiting for MySQL RDS instance to be available..."
             sleep 30
           done
-        env:
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
 
       - name: Run Database Initialization Script
         run: |
-          RDS_ENDPOINT=$(cat rds_endpoint.txt | cut -d'=' -f2)
           echo "Running database initialization script on $RDS_ENDPOINT:3306"
           chmod +x create-database.sh
           ./create-database.sh
