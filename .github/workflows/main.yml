@@ -51,16 +51,10 @@ jobs:
         run: |
           RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
           echo "Extracted RDS Endpoint: $RDS_ENDPOINT"
-          echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> $GITHUB_ENV
-
-      - name: Verify RDS Endpoint
-        run: |
-          echo "Verifying RDS Endpoint from $GITHUB_ENV file"
-          cat $GITHUB_ENV
 
       - name: Run Database Initialization Script
         run: |
-          source $GITHUB_ENV
+          RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
           echo "Running database initialization script on $RDS_ENDPOINT"
           chmod +x create-database.sh
           ./create-database.sh
