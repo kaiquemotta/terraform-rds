@@ -51,22 +51,14 @@ jobs:
         run: |
           RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
           echo "Extracted RDS Endpoint: $RDS_ENDPOINT"
-          echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> $GITHUB_ENV
-
-      - name: Print RDS Endpoint for Debugging
-        run: |
-          echo "Printing RDS Endpoint from Terraform output:"
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
-          echo "RDS_ENDPOINT = $RDS_ENDPOINT"
 
       - name: Run Database Initialization Script
         run: |
-          RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
           echo "Running database initialization script on $RDS_ENDPOINT"
           chmod +x create-database.sh
           ./create-database.sh
         env:
-          DB_HOST: ${{ steps.rds_endpoint.outputs.RDS_ENDPOINT }}
+          DB_HOST: $(terraform output -raw rds_endpoint)
           DB_PORT: 3306
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
