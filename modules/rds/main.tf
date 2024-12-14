@@ -1,3 +1,11 @@
+resource "aws_db_subnet_group" "main" {
+  name       = "main-subnet-group"
+  subnet_ids = var.subnet_ids
+  tags = {
+    Name = "main-subnet-group"
+  }
+}
+
 resource "aws_db_instance" "main" {
   identifier              = "pdv-db"
   allocated_storage       = 20
@@ -15,10 +23,11 @@ resource "aws_db_instance" "main" {
     Name = "pdv-db"
   }
 
+  depends_on = [aws_db_subnet_group.main]
 
   provisioner "local-exec" {
     command = <<EOT
-      echo "CREATE DATABASE IF NOT EXISTS ${var.db_name};" | mysql -h ${self.endpoint} -P 3306 -u ${var.db_username} -p ${var.db_password}
+      echo "CREATE DATABASE IF NOT EXISTS ${var.db_name};" | mysql -h ${self.endpoint} -P 3306 -u ${var.db_username} -p${var.db_password}
     EOT
   }
 }
@@ -39,14 +48,6 @@ resource "aws_security_group" "rds_sg" {
   }
   tags = {
     Name = "rds-sg"
-  }
-}
-
-resource "aws_db_subnet_group" "main" {
-  name       = "main-subnet-group"
-  subnet_ids = var.subnet_ids
-  tags = {
-    Name = "main-subnet-group"
   }
 }
 
