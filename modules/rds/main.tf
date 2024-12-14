@@ -28,7 +28,7 @@ resource "aws_db_instance" "main" {
   provisioner "local-exec" {
     command = <<EOT
     echo "CREATE DATABASE IF NOT EXISTS ${var.db_name};" | \
-    mysql -h ${aws_db_instance.main.endpoint} -P 3306 -u ${var.db_username} -p${var.db_password}
+    mysql -h ${aws_db_instance.main.endpoint} -P 3306 -u ${var.db_username} --password=${var.db_password}
   EOT
   }
 }
