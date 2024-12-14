@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Imprimir as variáveis de ambiente para depuração
+echo "Starting the script with the following environment variables:"
+echo "DB_HOST = $DB_HOST"
+echo "DB_PORT = $DB_PORT"
+echo "DB_USER = $DB_USER"
+echo "DB_PASS = $DB_PASS"
+echo "DB_NAME = $DB_NAME"
+
 # Variáveis de ambiente com valores padrão
 DB_HOST=${DB_HOST:-"localhost"}
 DB_PORT=${DB_PORT:-3306}
