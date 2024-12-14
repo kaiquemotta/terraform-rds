@@ -15,6 +15,7 @@ resource "aws_db_instance" "main" {
     Name = "pdv-db"
   }
 
+
   provisioner "local-exec" {
     command = <<EOT
       echo "CREATE DATABASE IF NOT EXISTS ${var.db_name};" | mysql -h ${self.endpoint} -P 3306 -u ${var.db_username} -p ${var.db_password}
