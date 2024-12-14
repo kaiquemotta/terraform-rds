@@ -1,4 +1,5 @@
 resource "aws_db_instance" "main" {
+  depends_on              = [aws_db_subnet_group.main]
   identifier              = "pdv-db"
   allocated_storage       = 20
   engine                  = "mysql"
