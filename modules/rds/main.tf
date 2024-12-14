@@ -1,5 +1,4 @@
 resource "aws_db_instance" "main" {
-  depends_on              = [aws_db_subnet_group.main]
   identifier              = "pdv-db"
   allocated_storage       = 20
   engine                  = "mysql"
@@ -14,6 +13,12 @@ resource "aws_db_instance" "main" {
   db_subnet_group_name    = aws_db_subnet_group.main.name
   tags = {
     Name = "pdv-db"
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "CREATE DATABASE IF NOT EXISTS ${var.db_name};" | mysql -h ${self.endpoint} -P 3306 -u ${var.db_username} -p ${var.db_password}
+    EOT
   }
 }
 
@@ -42,9 +47,9 @@ resource "aws_db_subnet_group" "main" {
   tags = {
     Name = "main-subnet-group"
   }
+}
 
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes  = [name]
-  }
+output "rds_endpoint" {
+  description = "The endpoint of the RDS instance."
+  value       = aws_db_instance.main.endpoint
 }

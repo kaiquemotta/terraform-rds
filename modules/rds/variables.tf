@@ -17,3 +17,8 @@ variable "db_password" {
 variable "subnet_ids" {
   description = "The IDs of the subnets to associate with the RDS instance."
 }
+
+variable "db_name" {
+  description = "The name of the database to create."
+  default     = "pdv"
+}
