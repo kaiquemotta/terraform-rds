@@ -42,4 +42,9 @@ resource "aws_db_subnet_group" "main" {
   tags = {
     Name = "main-subnet-group"
   }
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [name]
+  }
 }
