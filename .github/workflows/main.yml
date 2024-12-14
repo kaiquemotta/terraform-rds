@@ -39,6 +39,7 @@ jobs:
           echo "DB Password: ${{ secrets.DB_PASS }}"
 
       - name: Terraform Apply
+        id: apply
         run: terraform apply -auto-approve
         env:
           TF_VAR_db_password: ${{ secrets.DB_PASS }}
@@ -47,18 +48,24 @@ jobs:
           TF_VAR_subnet_ids: ${{ secrets.SUBNET_IDS }}
 
       - name: Get RDS Endpoint
-        id: rds_endpoint
+        id: get_rds_endpoint
         run: |
           RDS_ENDPOINT=$(terraform output -raw rds_endpoint)
           echo "Extracted RDS Endpoint: $RDS_ENDPOINT"
+          echo "::set-output name=rds_endpoint::$RDS_ENDPOINT"
+
+      - name: Print RDS Endpoint for Debugging
+        run: |
+          echo "Printing RDS Endpoint from Terraform output:"
+          echo "${{ steps.get_rds_endpoint.outputs.rds_endpoint }}"
 
       - name: Run Database Initialization Script
         run: |
-          echo "Running database initialization script on $RDS_ENDPOINT"
+          echo "Running database initialization script on ${{ steps.get_rds_endpoint.outputs.rds_endpoint }}"
           chmod +x create-database.sh
           ./create-database.sh
         env:
-          DB_HOST: $(terraform output -raw rds_endpoint)
+          DB_HOST: ${{ steps.get_rds_endpoint.outputs.rds_endpoint }}
           DB_PORT: 3306
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
