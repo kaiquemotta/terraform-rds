@@ -55,12 +55,23 @@ jobs:
 
       - name: Wait for RDS to be available
         run: |
+          # Ler o endpoint do arquivo e logar o valor
           RDS_ENDPOINT=$(cat rds_endpoint.txt | cut -d'=' -f2)
+          echo "RDS Endpoint: $RDS_ENDPOINT"
+
+          # Logar o comando MySQL antes da execução
           echo "Checking MySQL availability at $RDS_ENDPOINT"
-          until mysql -h $RDS_ENDPOINT -P 3306 -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASS }} -e "SELECT 1"; do
+          CMD="mysql -h $RDS_ENDPOINT -P 3306 -u ${DB_USER} -p${DB_PASS} -e 'SELECT 1'"
+          echo "Executing: $CMD"
+
+          # Verificar a disponibilidade do MySQL
+          until mysql -h "$RDS_ENDPOINT" -P 3306 -u "${{ secrets.DB_USER }}" -p"${{ secrets.DB_PASS }}" -e "SELECT 1"; do
             echo "Waiting for MySQL RDS instance to be available..."
             sleep 30
           done
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
 
       - name: Run Database Initialization Script
         run: |
