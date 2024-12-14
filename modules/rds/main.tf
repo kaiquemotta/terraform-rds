@@ -1,10 +1,4 @@
-data "aws_db_subnet_group" "existing" {
-  name = "main-subnet-group"
-}
-
 resource "aws_db_subnet_group" "main" {
-  count = length(data.aws_db_subnet_group.existing.id) == 0 ? 1 : 0
-
   name       = "main-subnet-group"
   subnet_ids = var.subnet_ids
   tags = {
@@ -24,7 +18,7 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot     = true
   publicly_accessible     = true
   vpc_security_group_ids  = [aws_security_group.rds_sg.id]
-  db_subnet_group_name    = length(data.aws_db_subnet_group.existing.id) == 0 ? aws_db_subnet_group.main[0].name : "main-subnet-group"
+  db_subnet_group_name    = aws_db_subnet_group.main.name
   tags = {
     Name = "pdv-db"
   }
